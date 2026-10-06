@@ -180,6 +180,7 @@ h2{font-size:clamp(2.1rem,4.6vw,3.3rem);color:var(--wine)}
 .gallery .ph,.gallery figure{aspect-ratio:4/3;margin:0;overflow:hidden;position:relative}
 .gallery figure img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
 .gallery figure:hover img{transform:scale(1.03)}
+.gallery .wide{grid-column:span 2;aspect-ratio:auto}
 .gallery .big{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;min-height:340px}
 .gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 14px;background:linear-gradient(180deg,transparent,rgba(46,13,31,.78));color:#fff;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
 .address{margin-top:30px;display:flex;gap:12px;align-items:center;color:var(--muted);font-size:.95rem}
@@ -269,7 +270,8 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
   .doc.main .photo img{width:70%}
   .doc.main h3{font-size:1.7rem}
   .gallery{grid-template-columns:1fr 1fr;margin-top:40px}
-  .gallery .big{grid-column:span 2;grid-row:auto;min-height:0;aspect-ratio:4/3}
+  .gallery .wide{grid-column:span 2;aspect-ratio:auto}
+.gallery .big{grid-column:span 2;grid-row:auto;min-height:0;aspect-ratio:4/3}
   .invbox{padding:56px 22px 40px}
   .invbox .tagtop{font-size:.64rem;padding:7px 14px;letter-spacing:.14em}
   .faq summary{font-size:1.2rem}
@@ -560,8 +562,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
       <figure class="big"><img src="images/estrutura-0164.jpg" alt="Sala de aula do IAHOF durante aula teórica" loading="lazy"><figcaption>Sala de aula</figcaption></figure>
       <figure><img src="images/estrutura-0134.jpg" alt="Atendimento supervisionado na prática clínica" style="object-position:center 30%" loading="lazy"><figcaption>Prática clínica</figcaption></figure>
       <figure><img src="images/estrutura-0140.jpg" alt="Alunos acompanhando a prática clínica" style="object-position:center 62%" loading="lazy"><figcaption>Acompanhamento</figcaption></figure>
-      <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Centro cirúrgico</div>
-      <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Fachada</div>
+      <figure class="wide"><img src="images/estrutura-fachada.jpg" alt="Fachada do Empresarial Charles Darwin, sede do IAHOF, na Ilha do Leite" style="object-position:center 72%" loading="lazy"><figcaption>Fachada</figcaption></figure>
     </div>
     <p class="address"><svg class="ic ic-sm"><use href="#i-pin"/></svg>Empresarial Charles Darwin · Ilha do Leite, Recife/PE</p>
   </div>
@@ -634,7 +635,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
 <script>
 (function(){
   // ====== CONFIGURAÇÃO ======
-  var WA_NUMBER = "5581999006000"; // (81) 99900-6000 com DDI 55
+  var WA_NUMBER = "5581994036265"; // +55 (81) 99403-6265
   var WA_TEXT   = "Olá! Vim pelo site e quero garantir minha vaga na Especialização em Cirurgias Estéticas da Face do IAHOF (turma de 26/10).";
   var START     = new Date("2026-10-26T00:00:00-03:00");
   // ===========================
