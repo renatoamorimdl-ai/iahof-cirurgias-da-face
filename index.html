@@ -125,7 +125,9 @@ h2{font-size:clamp(2.1rem,4.6vw,3.3rem);color:var(--wine)}
 .point .ic{color:var(--logo)}
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;color:var(--muted);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;background:var(--stone);border:1px solid var(--line)}
 .ph .ic{width:30px;height:30px;color:#a89aa2}
-.about .ph{aspect-ratio:4/5}
+.about-photo{margin:0;position:relative}
+.about-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:60% 40%;filter:saturate(.95)}
+.about-photo::after{content:"";position:absolute;inset:14px -14px -14px 14px;border:1px solid var(--champagne);z-index:-1}
 
 /* content */
 .content{background:var(--stone)}
@@ -158,8 +160,8 @@ h2{font-size:clamp(2.1rem,4.6vw,3.3rem);color:var(--wine)}
 .fgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:26px;margin-top:58px}
 .fgrid .doc{grid-column:span 2}
 .doc{background:var(--ivory);border:1px solid var(--line);display:flex;flex-direction:column}
-.doc .photo{aspect-ratio:1/1;overflow:hidden;background:var(--line)}
-.doc .photo img{width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:saturate(.92)}
+.doc .photo{aspect-ratio:1/1;overflow:hidden;background:linear-gradient(160deg,#F1EAE4,#E4D9D1);display:grid;place-items:center}
+.doc .photo img{width:76%;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.75),0 14px 30px rgba(46,13,31,.16)}
 .doc .body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:6px;flex:1}
 .doc h3{font-size:1.45rem;color:var(--wine)}
 .doc .role{font-size:.78rem;color:var(--logo);letter-spacing:.04em;font-weight:500}
@@ -172,14 +174,18 @@ details.cv ul{list-style:none;margin-top:12px;display:grid;gap:7px}
 details.cv li{font-size:.82rem;color:var(--muted);padding-left:14px;position:relative;font-weight:300;line-height:1.5}
 details.cv li::before{content:"";position:absolute;left:0;top:.65em;width:5px;height:1px;background:var(--logo)}
 .fgrid .doc.main{grid-column:span 3;flex-direction:row}
-.doc.main .photo{width:42%;aspect-ratio:auto;flex:none}
+.doc.main .photo{width:42%;aspect-ratio:auto;flex:none;padding:24px 0;align-content:center}
+.doc.main .photo img{width:84%}
 .doc.main .body{justify-content:center}
 .doc.main h3{font-size:2rem}
 
 /* structure */
-.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:58px}
-.gallery .ph{aspect-ratio:4/3}
-.gallery .ph:first-child{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;min-height:340px}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:58px}
+.gallery .ph,.gallery figure{aspect-ratio:4/3;margin:0;overflow:hidden;position:relative}
+.gallery figure img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gallery figure:hover img{transform:scale(1.03)}
+.gallery .big{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;min-height:340px}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 14px;background:linear-gradient(180deg,transparent,rgba(46,13,31,.78));color:#fff;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
 .address{margin-top:30px;display:flex;gap:12px;align-items:center;color:var(--muted);font-size:.95rem}
 .address .ic{color:var(--logo)}
 
@@ -255,7 +261,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
   .count{gap:14px;flex-direction:column;padding-top:32px}
   .count .num{font-size:3rem}
   .about .wrap{grid-template-columns:1fr;gap:40px}
-  .about .ph{aspect-ratio:16/11}
+  .about-photo::after{inset:10px -8px -10px 8px}
   .list6{grid-template-columns:1fr;margin-top:40px}
   .item{padding:28px 24px}
   .feat4,.safe4{grid-template-columns:1fr;margin-top:40px}
@@ -263,10 +269,11 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
   .safe{padding:28px 24px}
   .fgrid{grid-template-columns:1fr;margin-top:40px}
   .fgrid .doc.main{grid-column:auto;flex-direction:column}
-  .doc.main .photo{width:100%;aspect-ratio:1/1}
+  .doc.main .photo{width:100%;aspect-ratio:1/1;padding:0}
+  .doc.main .photo img{width:70%}
   .doc.main h3{font-size:1.7rem}
   .gallery{grid-template-columns:1fr 1fr;margin-top:40px}
-  .gallery .ph:first-child{grid-column:span 2;grid-row:auto;min-height:0;aspect-ratio:16/10}
+  .gallery .big{grid-column:span 2;grid-row:auto;min-height:0;aspect-ratio:4/3}
   .invbox{padding:56px 22px 40px}
   .invbox .tagtop{font-size:.64rem;padding:7px 14px;letter-spacing:.14em}
   .faq summary{font-size:1.2rem}
@@ -330,7 +337,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
     <span class="cta-note">Atendimento direto com a nossa equipe pelo WhatsApp</span>
   </div>
   <div class="hero-photo">
-    <img src="images/hero.jpg" alt="Corpo docente da Especialização em Cirurgias Estéticas da Face do IAHOF" width="2700" height="1134" fetchpriority="high">
+    <img src="images/hero.jpg" alt="Corpo docente da Especialização em Cirurgias Estéticas da Face do IAHOF" width="2700" height="1146" fetchpriority="high">
   </div>
 </section>
 
@@ -358,7 +365,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="point"><svg class="ic"><use href="#i-cap"/></svg>Mentoria posterior e grupo exclusivo</div>
       </div>
     </div>
-    <div class="ph" role="img" aria-label="Espaço reservado para foto"><svg class="ic"><use href="#i-cam"/></svg>Foto da Dra. Elisabeth / aula</div>
+    <figure class="about-photo"><img src="images/elisabeth-aula.jpg" alt="Dra. Elisabeth Almeida em atendimento durante a prática clínica no IAHOF" loading="lazy"></figure>
   </div>
 </section>
 
@@ -561,11 +568,11 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
     <h2>Moderna, completa e pensada para o seu aprendizado</h2>
     <p class="lead">Aulas e práticas acontecem na sede do IAHOF, em um ambiente preparado para ensino e atendimento com segurança.</p>
     <div class="gallery">
+      <figure class="big"><img src="images/estrutura-0164.jpg" alt="Sala de aula do IAHOF durante aula teórica" loading="lazy"><figcaption>Sala de aula</figcaption></figure>
+      <figure><img src="images/estrutura-0134.jpg" alt="Atendimento supervisionado na prática clínica" style="object-position:center 30%" loading="lazy"><figcaption>Prática clínica</figcaption></figure>
+      <figure><img src="images/estrutura-0140.jpg" alt="Alunos acompanhando a prática clínica" style="object-position:center 62%" loading="lazy"><figcaption>Acompanhamento</figcaption></figure>
       <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Centro cirúrgico</div>
-      <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Sala de aula</div>
-      <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Turma e certificação</div>
       <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Fachada</div>
-      <div class="ph"><svg class="ic"><use href="#i-cam"/></svg>Dra. Elisabeth com alunos</div>
     </div>
     <p class="address"><svg class="ic ic-sm"><use href="#i-pin"/></svg>Empresarial Charles Darwin · Ilha do Leite, Recife/PE</p>
   </div>
