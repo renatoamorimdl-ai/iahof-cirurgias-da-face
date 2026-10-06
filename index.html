@@ -142,7 +142,7 @@ h2{font-size:clamp(2.1rem,4.6vw,3.3rem);color:var(--wine)}
 
 /* practice */
 .practice{background:var(--wine-deep);color:#fff}
-.feat4{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:62px;border-top:1px solid rgba(255,255,255,.16)}
+.feat4{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:62px;border-top:1px solid rgba(255,255,255,.16)}
 .feat{padding:36px 30px 8px 0}
 .feat .ic{color:var(--champagne);width:32px;height:32px}
 .feat h3{font-family:var(--serif);font-size:1.5rem;color:#fff;margin:22px 0 10px}
@@ -165,14 +165,10 @@ h2{font-size:clamp(2.1rem,4.6vw,3.3rem);color:var(--wine)}
 .doc .body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:6px;flex:1}
 .doc h3{font-size:1.45rem;color:var(--wine)}
 .doc .role{font-size:.78rem;color:var(--logo);letter-spacing:.04em;font-weight:500}
-details.cv{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
-details.cv summary{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--muted);cursor:pointer;list-style:none;display:flex;justify-content:space-between}
-details.cv summary::-webkit-details-marker{display:none}
-details.cv summary::after{content:"+";font-size:1.1rem;line-height:1;color:var(--logo)}
-details.cv[open] summary::after{content:"–"}
-details.cv ul{list-style:none;margin-top:12px;display:grid;gap:7px}
-details.cv li{font-size:.82rem;color:var(--muted);padding-left:14px;position:relative;font-weight:300;line-height:1.5}
-details.cv li::before{content:"";position:absolute;left:0;top:.65em;width:5px;height:1px;background:var(--logo)}
+.cv{margin-top:12px;border-top:1px solid var(--line);padding-top:14px}
+.cv ul{list-style:none;margin-top:12px;display:grid;gap:7px}
+.cv li{font-size:.82rem;color:var(--muted);padding-left:14px;position:relative;font-weight:300;line-height:1.5}
+.cv li::before{content:"";position:absolute;left:0;top:.65em;width:5px;height:1px;background:var(--logo)}
 .fgrid .doc.main{grid-column:span 3;flex-direction:row}
 .doc.main .photo{width:42%;aspect-ratio:auto;flex:none;padding:24px 0;align-content:center}
 .doc.main .photo img{width:84%}
@@ -236,7 +232,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
   .fgrid{grid-template-columns:repeat(2,1fr)}
   .fgrid .doc{grid-column:auto}
   .fgrid .doc.main{grid-column:span 2}
-  .feat4,.safe4{grid-template-columns:repeat(2,1fr)}
+  .safe4{grid-template-columns:repeat(2,1fr)}
   .feat{padding-right:20px}
   .list6{grid-template-columns:repeat(2,1fr)}
   .nav{display:none}
@@ -256,7 +252,7 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
   .badges{margin:28px 0 30px;gap:10px}
   .badge{font-size:.76rem;padding:9px 14px;width:100%;justify-content:center}
   .hero-photo{margin-top:44px}
-  .hero-photo img{width:140%;max-width:none;margin-left:-20%}
+  .hero-photo img{width:100%;max-width:none;margin-left:0;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22%,#000 80%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 22%,#000 80%,transparent 100%)}
   .strip{padding-bottom:44px}
   .count{gap:14px;flex-direction:column;padding-top:32px}
   .count .num{font-size:3rem}
@@ -404,7 +400,6 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
     <p class="lead">Você terá prática clínica supervisionada com pacientes reais e acompanhamento próximo dos professores durante o processo.</p>
     <div class="feat4">
       <div class="feat"><svg class="ic"><use href="#i-pulse"/></svg><h3>Prática supervisionada</h3><p>Atendimento a pacientes reais, com professores ao seu lado em cada etapa.</p></div>
-      <div class="feat"><svg class="ic"><use href="#i-build"/></svg><h3>Centro cirúrgico completo</h3><p>Vivência em ambiente cirúrgico estruturado, do preparo ao pós-operatório.</p></div>
       <div class="feat"><svg class="ic"><use href="#i-book"/></svg><h3>Material didático</h3><p>Conteúdo de apoio para estudar, revisar e consultar depois das aulas.</p></div>
       <div class="feat"><svg class="ic"><use href="#i-chat"/></svg><h3>Grupo exclusivo</h3><p>Troca de conhecimento com professores e colegas durante a especialização.</p></div>
     </div>
@@ -439,17 +434,14 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dra. Elisabeth Almeida</h3>
           <div class="role">CEO do IAHOF · Responsável técnica</div>
-          <details class="cv" open>
-            <summary>Currículo</summary>
-            <ul>
+          <div class="cv"><ul>
               <li>Cirurgiã-dentista, especialista em Ortodontia</li>
               <li>Coautora dos livros "Mulheres na HOF" e "Consenso em fios de ITHREAD"</li>
               <li>Diretora científica da FACE DOCTOR</li>
               <li>Coordenadora e professora de curso realizado na Universidade de Harvard (EUA)</li>
               <li>Embaixadora da RENOVA · Speaker do Ithread</li>
               <li>Coordenadora e professora de cursos de HOF no IAHOF</li>
-            </ul>
-          </details>
+            </ul></div>
         </div>
       </article>
 
@@ -458,16 +450,13 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dr. André Olsen</h3>
           <div class="role">Coordenador da imersão em cirurgias estéticas da face</div>
-          <details class="cv" open>
-            <summary>Currículo</summary>
-            <ul>
+          <div class="cv"><ul>
               <li>Graduado em Odontologia pela UFPE</li>
               <li>Especialista em Cirurgia e Traumatologia Bucomaxilofacial (FACSETE)</li>
               <li>Mestre em DTM/DOF (S.L. Mandic, SP)</li>
               <li>Professor de cirurgia oral (UNINASSAU) · Presidente da ABMF-PE</li>
               <li>Habilitações em artroscopia da ATM (IRCAD América Latina), reconstrução protética da ATM (Jacksonville, EUA), cirurgia ortognática (Dallas, EUA) e sedação com N2O2</li>
-            </ul>
-          </details>
+            </ul></div>
         </div>
       </article>
 
@@ -476,13 +465,13 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dr. Icaro Jasub D. de Lima</h3>
           <div class="role">Cirurgias estéticas da face</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Graduado em Odontologia pela UEPB</li>
             <li>Especialista em Cirurgia e Traumatologia Bucomaxilofacial</li>
             <li>Especialista em Implantodontia</li>
             <li>Especialista em Harmonização Orofacial</li>
             <li>Especialista em Cirurgias Estéticas da Face</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
@@ -491,13 +480,13 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dra. Ellen Barros</h3>
           <div class="role">Professora de cirurgias da face</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Médica formada na Rússia (Kursk State Medical University)</li>
             <li>Atualização internacional em cirurgia oculoplástica</li>
             <li>Pós-graduanda em Dermatologia</li>
             <li>Especialista em Dermatologia Estética</li>
             <li>Técnica autoral de lift de supercílios</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
@@ -506,13 +495,13 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dra. Andressa Almeida</h3>
           <div class="role">Professora e coordenadora do IAHOF Recife</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Graduada em Odontologia pela UPE · Mestra em Clínica Integrada (UFPE)</li>
             <li>Especialista em Harmonização Orofacial, Saúde Coletiva e Periodontia</li>
             <li>Capacitação em HOF na Harvard Medical School</li>
             <li>Coordenadora do curso de HOF em Recife e João Pessoa</li>
             <li>Coautora do livro "Harmonização Orofacial – Mulher"</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
@@ -521,12 +510,12 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dr. Israel Melo</h3>
           <div class="role">Cirurgia e Harmonização Orofacial</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Graduado em Odontologia pela UEPB (2000) · Mestre em Saúde Coletiva</li>
             <li>Especialista em Implantodontia, Harmonização Orofacial e Prótese Dentária</li>
             <li>Concluinte da especialização em Cirurgia e Traumatologia Bucomaxilofacial</li>
             <li>Professor substituto de Prótese Dentária e Oclusão (UEPB)</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
@@ -535,12 +524,12 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dra. Gabriela Pereira</h3>
           <div class="role">Harmonização Orofacial</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Cirurgiã-dentista (UFPE) · Mestra em Ciências da Saúde</li>
             <li>Especialista em Harmonização Orofacial</li>
             <li>Pós-graduada em Cirurgia Oral Menor</li>
             <li>Habilitação em laserterapia · Speaker EVO</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
@@ -549,11 +538,11 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
         <div class="body">
           <h3>Dra. Waleska Almeida</h3>
           <div class="role">Coordenadora dos cursos de HOF · IAHOF Brasília</div>
-          <details class="cv"><summary>Currículo</summary><ul>
+          <div class="cv"><ul>
             <li>Cirurgiã-dentista (Unicap, Brasília) · Mestranda em Saúde da Família</li>
             <li>Nutrição pela UFPE</li>
             <li>CEO das clínicas FACEDOCTOR em Recife e Brasília</li>
-          </ul></details>
+          </ul></div>
         </div>
       </article>
 
