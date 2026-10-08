@@ -225,8 +225,10 @@ footer .rt{color:rgba(255,255,255,.85);letter-spacing:.06em}
 footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margin-top:10px}
 
 /* floating */
-.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;width:60px;height:60px;border-radius:50%;background:var(--wa);display:grid;place-items:center;box-shadow:0 12px 28px rgba(0,0,0,.32);transition:transform .2s;color:#fff}
-.fab:hover{transform:scale(1.07)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:900;width:60px;height:60px;border-radius:50%;background:var(--wa);display:grid;place-items:center;box-shadow:0 12px 28px rgba(0,0,0,.32);transition:transform .2s;color:#fff}
+.fab{border:0;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.fab svg{pointer-events:none}
+@media (hover:hover){.fab:hover{transform:scale(1.07)}}
 .fab svg{width:30px;height:30px}
 
 /* tablet */
@@ -654,7 +656,7 @@ body.lead-open{overflow:hidden}
   </div>
 </footer>
 
-<a class="fab js-lead" data-place="flutuante" href="#" aria-label="Garantir minha vaga" role="button"><svg class="wa"><use href="#i-wa"/></svg></a>
+<button type="button" class="fab js-lead" data-place="flutuante" aria-label="Garantir minha vaga"><svg class="wa"><use href="#i-wa"/></svg></button>
 
 
 <div class="lead-modal" id="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-title" aria-hidden="true">
@@ -698,12 +700,20 @@ body.lead-open{overflow:hidden}
   var btn   = document.getElementById("lead-submit");
   var place = "cta", lastFocus = null, sending = false;
 
-  function track(type, name, data){ if (window.fbq) { try { fbq(type, name, data); } catch(e){} } }
+  function track(type, name, data, opts){ if (window.fbq) { try { opts ? fbq(type, name, data, opts) : fbq(type, name, data); } catch(e){} } }
 
   function openModal(p, el){
     place = p || "cta"; lastFocus = el || null;
     modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
     document.body.classList.add("lead-open");
+    try {
+      var sv = JSON.parse(localStorage.getItem("iahof_lead") || "null");
+      if (sv) {
+        if (!fNome.value && sv.nome) fNome.value = sv.nome;
+        if (!fWpp.value && sv.wpp) { fWpp.value = sv.wpp; fWpp.dispatchEvent(new Event("input")); }
+        if (!fCid.value && sv.cidade) fCid.value = sv.cidade;
+      }
+    } catch (err) {}
     track("trackCustom", "AbriuFormulario", { cta_location: place });
     setTimeout(function(){ fNome.focus(); }, 60);
   }
@@ -713,13 +723,12 @@ body.lead-open{overflow:hidden}
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
-  var links = document.querySelectorAll(".js-lead");
-  for (var i = 0; i < links.length; i++) {
-    links[i].addEventListener("click", function(e){
-      e.preventDefault();
-      openModal(this.getAttribute("data-place"), this);
-    });
-  }
+  document.addEventListener("click", function(e){
+    var el = e.target && e.target.closest ? e.target.closest(".js-lead") : null;
+    if (!el) return;
+    e.preventDefault();
+    if (!modal.classList.contains("open")) openModal(el.getAttribute("data-place"), el);
+  });
   document.getElementById("lead-close").addEventListener("click", closeModal);
   modal.addEventListener("mousedown", function(e){ if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", function(e){
@@ -775,11 +784,22 @@ body.lead-open{overflow:hidden}
     var text = "Olá! Meu nome é " + nome + ", sou de " + cidade + ". Vim pelo site e quero garantir minha vaga na Especialização em Cirurgias Estéticas da Face do IAHOF (turma de 26/10).";
     var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text);
 
+    try { localStorage.setItem("iahof_lead", JSON.stringify({ nome: nome, wpp: fWpp.value, cidade: cidade })); } catch (err) {}
+
+    // Correspondência avançada (o Pixel faz o hash antes de enviar) + Lead com eventID
+    var parts = nome.toLowerCase().split(" ");
+    var norm = function(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, ""); };
+    var eid = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+    track("init", "567992274670139", {
+      ph: "55" + wd, fn: norm(parts[0]), ln: parts.length > 1 ? norm(parts[parts.length - 1]) : "",
+      ct: norm(cidade), country: "br"
+    });
     track("track", "Lead", {
       content_name: "Especializacao Cirurgias Esteticas da Face",
       content_category: "Curso",
       cta_location: place
-    });
+    }, { eventID: eid });
+    var t0 = Date.now();
 
     var u = utm();
     var payload = {
@@ -790,7 +810,12 @@ body.lead-open{overflow:hidden}
     };
 
     var done = false;
-    function go(){ if (done) return; done = true; window.location.href = waUrl; }
+    function go(){
+      if (done) return;
+      var wait = 450 - (Date.now() - t0);
+      if (wait > 0) { setTimeout(go, wait); return; }
+      done = true; window.location.href = waUrl;
+    }
 
     if (SHEETS_URL && !fHp.value) {
       try {
