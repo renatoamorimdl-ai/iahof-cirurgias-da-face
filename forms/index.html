@@ -303,6 +303,13 @@ footer .legal{max-width:640px;font-size:.75rem;color:rgba(255,255,255,.45);margi
 .lead-submit[disabled]{opacity:.7;cursor:wait}
 .lead-submit svg{width:20px;height:20px;fill:currentColor}
 .lead-fine{font-size:.74rem;color:var(--muted);line-height:1.45;margin:14px 0 0;text-align:center}
+.lead-ok{display:none;text-align:center;padding:6px 0 2px}
+.lead-ok.show{display:block}
+.lead-ok .tick{width:56px;height:56px;border-radius:50%;background:var(--wa);color:#fff;display:grid;place-items:center;margin:0 auto 14px}
+.lead-ok .tick svg{width:28px;height:28px}
+.lead-ok h3{margin:0 0 8px}
+.lead-ok p{font-size:.94rem;color:var(--muted);line-height:1.5;margin:0 0 18px}
+.lead-ok a.lead-submit{text-decoration:none}
 body.lead-open{overflow:hidden}
 </style>
 </head>
@@ -680,10 +687,16 @@ body.lead-open{overflow:hidden}
         <input id="lead-cid" name="cidade" type="text" autocomplete="address-level2" placeholder="Ex.: Recife" maxlength="60">
         <span class="msg">Informe sua cidade.</span>
       </div>
-      <div class="lead-hp" aria-hidden="true"><label>Site<input type="text" name="website" id="lead-hp" tabindex="-1" autocomplete="off"></label></div>
+      <div class="lead-hp" aria-hidden="true"><label>Deixe em branco<input type="text" name="x_ref_token" id="lead-hp" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore="true"></label></div>
       <button type="submit" class="lead-submit" id="lead-submit"><svg class="wa"><use href="#i-wa"/></svg><span>Continuar no WhatsApp</span></button>
       <p class="lead-fine">Ao continuar, você concorda em ser contatado pela equipe do IAHOF sobre a especialização. Seus dados não serão compartilhados.</p>
     </form>
+    <div class="lead-ok" id="lead-ok" aria-live="polite">
+      <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h3>Dados recebidos!</h3>
+      <p>Estamos abrindo o WhatsApp para você falar com a nossa equipe. Se ele não abrir sozinho, toque no botão abaixo.</p>
+      <a class="lead-submit" id="lead-wa-link" href="#" target="_blank" rel="noopener"><svg class="wa"><use href="#i-wa"/></svg><span>Abrir o WhatsApp</span></a>
+    </div>
   </div>
 </div>
 <script>
@@ -779,61 +792,69 @@ body.lead-open{overflow:hidden}
     if (!okWpp)  { fWpp.focus();  return; }
     if (!okCid)  { fCid.focus();  return; }
 
-    sending = true; btn.disabled = true; btn.querySelector("span").textContent = "Abrindo o WhatsApp...";
+    sending = true; btn.disabled = true; btn.querySelector("span").textContent = "Enviando...";
 
     var text = "Olá! Meu nome é " + nome + ", sou de " + cidade + ". Vim pelo site e quero garantir minha vaga na Especialização em Cirurgias Estéticas da Face do IAHOF (turma de 26/10).";
     var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text);
 
     try { localStorage.setItem("iahof_lead", JSON.stringify({ nome: nome, wpp: fWpp.value, cidade: cidade })); } catch (err) {}
 
-    // Correspondência avançada (o Pixel faz o hash antes de enviar) + Lead com eventID
-    var parts = nome.toLowerCase().split(" ");
-    var norm = function(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, ""); };
-    var eid = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
-    track("init", "567992274670139", {
-      ph: "55" + wd, fn: norm(parts[0]), ln: parts.length > 1 ? norm(parts[parts.length - 1]) : "",
-      ct: norm(cidade), country: "br"
-    });
-    track("track", "Lead", {
-      content_name: "Especializacao Cirurgias Esteticas da Face",
-      content_category: "Curso",
-      cta_location: place
-    }, { eventID: eid });
-    var t0 = Date.now();
+    // Lead no Pixel: no máximo 1 por telefone a cada 24h (evita contar reenvios da mesma pessoa)
+    var key = "iahof_lead_sent_" + wd, repeat = false;
+    try { var last = parseInt(localStorage.getItem(key) || "0", 10); repeat = last && (Date.now() - last) < 86400000; } catch (err) {}
+    if (!repeat) {
+      var parts = nome.toLowerCase().split(" ");
+      var norm = function(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, ""); };
+      var eid = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+      track("init", "567992274670139", {
+        ph: "55" + wd, fn: norm(parts[0]), ln: parts.length > 1 ? norm(parts[parts.length - 1]) : "",
+        ct: norm(cidade), country: "br"
+      });
+      track("track", "Lead", {
+        content_name: "Especializacao Cirurgias Esteticas da Face",
+        content_category: "Curso",
+        cta_location: place
+      }, { eventID: eid });
+      try { localStorage.setItem(key, String(Date.now())); } catch (err) {}
+    }
 
+    // Envio à planilha: sempre (campo anti-spam só gera um marcador, nunca descarta o lead)
     var u = utm();
     var payload = {
-      nome: nome, whatsapp: "55" + wd, cidade: cidade, cta_location: place,
+      nome: nome, whatsapp: "55" + wd, cidade: cidade,
+      cta_location: place + (repeat ? " (reenvio)" : "") + (fHp.value ? " (suspeito)" : ""),
       utm_source: u.utm_source, utm_medium: u.utm_medium, utm_campaign: u.utm_campaign,
       utm_content: u.utm_content, utm_term: u.utm_term, fbclid: u.fbclid,
-      page_url: location.href, referrer: document.referrer || "", website: fHp.value
+      page_url: location.href, referrer: document.referrer || ""
     };
-
-    var done = false;
-    function go(){
-      if (done) return;
-      var wait = 450 - (Date.now() - t0);
-      if (wait > 0) { setTimeout(go, wait); return; }
-      done = true; window.location.href = waUrl;
-    }
-
-    if (SHEETS_URL && !fHp.value) {
+    if (SHEETS_URL) {
+      var body = JSON.stringify(payload), sent = false;
       try {
-        fetch(SHEETS_URL, {
-          method: "POST", mode: "no-cors", keepalive: true,
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        }).then(go, go);
-      } catch (err) { go(); }
-      setTimeout(go, 2500);
-    } else {
-      go();
+        if (navigator.sendBeacon) sent = navigator.sendBeacon(SHEETS_URL, new Blob([body], { type: "text/plain;charset=UTF-8" }));
+      } catch (err) {}
+      if (!sent) {
+        try { fetch(SHEETS_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body }); } catch (err) {}
+      }
     }
+
+    // Tela de confirmação com botão manual (funciona em qualquer navegador interno) + tentativa automática
+    var link = document.getElementById("lead-wa-link");
+    link.setAttribute("href", waUrl);
+    link.onclick = function(){ track("trackCustom", "AbriuWhatsApp", { cta_location: place }); };
+    form.style.display = "none";
+    document.querySelector(".lead-card h3").style.display = "none";
+    document.querySelector(".lead-card .lead-sub").style.display = "none";
+    document.getElementById("lead-ok").classList.add("show");
+    setTimeout(function(){ window.location.href = waUrl; }, 900);
   });
 
-  // Se o usuário voltar do WhatsApp (cache), reativa o botão
+  // Ao voltar do WhatsApp (cache do navegador), restaura o formulário
   window.addEventListener("pageshow", function(){
     sending = false; btn.disabled = false; btn.querySelector("span").textContent = "Continuar no WhatsApp";
+    form.style.display = "";
+    document.querySelector(".lead-card h3").style.display = "";
+    document.querySelector(".lead-card .lead-sub").style.display = "";
+    document.getElementById("lead-ok").classList.remove("show");
   });
 
   // Contagem regressiva até o início da turma
