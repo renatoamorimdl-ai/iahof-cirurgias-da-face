@@ -703,7 +703,6 @@ body.lead-open{overflow:hidden}
 (function(){
   // ====== CONFIGURAÇÃO ======
   var WA_NUMBER  = "5581994036265"; // +55 (81) 99403-6265
-  var SHEETS_URL = "https://script.google.com/macros/s/AKfycbzsztMZg4aWCliwYl7twoYfpDgu-3dMM8Wef6wqTZtILH6bRJ0u405yO4GnCV_uOaQK/exec";              // URL do Apps Script (web app) que grava na planilha
   var START      = new Date("2026-10-26T00:00:00-03:00");
   // ===========================
 
@@ -775,6 +774,37 @@ body.lead-open{overflow:hidden}
     el.addEventListener("input", function(){ el.parentNode.classList.remove("err"); });
   });
 
+  function getCookie(n){
+    var m = document.cookie.match(new RegExp("(?:^|; )" + n + "=([^;]*)"));
+    return m ? decodeURIComponent(m[1]) : "";
+  }
+  // Envia ao /api/lead. Retorna o status HTTP (0 = falha de rede).
+  function postLead(p){
+    try {
+      return fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p), keepalive: true })
+        .then(function(r){ return r.status; }, function(){ return 0; });
+    } catch (e) { return Promise.resolve(0); }
+  }
+  // Fila local: leads que não chegaram ao servidor são reenviados na próxima visita
+  var QKEY = "iahof_queue";
+  function readQ(){ try { return JSON.parse(localStorage.getItem(QKEY) || "[]"); } catch (e) { return []; } }
+  function writeQ(q){ try { localStorage.setItem(QKEY, JSON.stringify(q.slice(-20))); } catch (e) {} }
+  function enqueue(p){
+    var q = readQ(), c = {}; for (var k in p) c[k] = p[k];
+    c.cta_location = String(c.cta_location).replace(" (retry)", "") + " (retry)"; c.fire_lead = false;
+    q.push({ t: Date.now(), p: c }); writeQ(q);
+  }
+  function flushQ(){
+    var q = readQ().filter(function(i){ return Date.now() - i.t < 3 * 86400000; });
+    writeQ(q);
+    q.forEach(function(item){
+      postLead(item.p).then(function(st){
+        if (st && st < 500) writeQ(readQ().filter(function(x){ return x.t !== item.t; }));
+      });
+    });
+  }
+  setTimeout(flushQ, 1500);
+
   function utm(){
     var q = new URLSearchParams(location.search), o = {};
     ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid"].forEach(function(k){ o[k] = q.get(k) || ""; });
@@ -802,10 +832,10 @@ body.lead-open{overflow:hidden}
     // Lead no Pixel: no máximo 1 por telefone a cada 24h (evita contar reenvios da mesma pessoa)
     var key = "iahof_lead_sent_" + wd, repeat = false;
     try { var last = parseInt(localStorage.getItem(key) || "0", 10); repeat = last && (Date.now() - last) < 86400000; } catch (err) {}
+    var eid = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
     if (!repeat) {
       var parts = nome.toLowerCase().split(" ");
       var norm = function(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, ""); };
-      var eid = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
       track("init", "567992274670139", {
         ph: "55" + wd, fn: norm(parts[0]), ln: parts.length > 1 ? norm(parts[parts.length - 1]) : "",
         ct: norm(cidade), country: "br"
@@ -818,24 +848,21 @@ body.lead-open{overflow:hidden}
       try { localStorage.setItem(key, String(Date.now())); } catch (err) {}
     }
 
-    // Envio à planilha: sempre (campo anti-spam só gera um marcador, nunca descarta o lead)
+    // Envio ao servidor (/api/lead): sempre (campo anti-spam só gera um marcador, nunca descarta o lead)
     var u = utm();
+    var fbc = getCookie("_fbc") || (u.fbclid ? "fb.1." + Date.now() + "." + u.fbclid : "");
     var payload = {
       nome: nome, whatsapp: "55" + wd, cidade: cidade,
       cta_location: place + (repeat ? " (reenvio)" : "") + (fHp.value ? " (suspeito)" : ""),
       utm_source: u.utm_source, utm_medium: u.utm_medium, utm_campaign: u.utm_campaign,
       utm_content: u.utm_content, utm_term: u.utm_term, fbclid: u.fbclid,
-      page_url: location.href, referrer: document.referrer || ""
+      page_url: location.href, referrer: document.referrer || "",
+      event_id: eid, fire_lead: !repeat, fbp: getCookie("_fbp"), fbc: fbc
     };
-    if (SHEETS_URL) {
-      var body = JSON.stringify(payload), sent = false;
-      try {
-        if (navigator.sendBeacon) sent = navigator.sendBeacon(SHEETS_URL, new Blob([body], { type: "text/plain;charset=UTF-8" }));
-      } catch (err) {}
-      if (!sent) {
-        try { fetch(SHEETS_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body }); } catch (err) {}
-      }
-    }
+    var sendP = postLead(payload).then(function(st){
+      if (st >= 500 || st === 0) enqueue(payload);   // falha de rede/servidor: guarda para reenviar
+      return st;
+    });
 
     // Tela de confirmação com botão manual (funciona em qualquer navegador interno) + tentativa automática
     var link = document.getElementById("lead-wa-link");
@@ -845,7 +872,10 @@ body.lead-open{overflow:hidden}
     document.querySelector(".lead-card h3").style.display = "none";
     document.querySelector(".lead-card .lead-sub").style.display = "none";
     document.getElementById("lead-ok").classList.add("show");
-    setTimeout(function(){ window.location.href = waUrl; }, 900);
+    // Abre o WhatsApp depois de no mínimo 0,9s e no máximo 2,5s esperando a confirmação do servidor
+    var minWait = new Promise(function(r){ setTimeout(r, 900); });
+    var maxWait = new Promise(function(r){ setTimeout(r, 2500); });
+    Promise.all([minWait, Promise.race([sendP, maxWait])]).then(function(){ window.location.href = waUrl; });
   });
 
   // Ao voltar do WhatsApp (cache do navegador), restaura o formulário
