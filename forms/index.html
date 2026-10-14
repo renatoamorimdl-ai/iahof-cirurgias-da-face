@@ -688,7 +688,7 @@ body.lead-open{overflow:hidden}
         <span class="msg">Informe sua cidade.</span>
       </div>
       <div class="lead-hp" aria-hidden="true"><label>Deixe em branco<input type="text" name="x_ref_token" id="lead-hp" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore="true"></label></div>
-      <button type="submit" class="lead-submit" id="lead-submit"><svg class="wa"><use href="#i-wa"/></svg><span>Continuar no WhatsApp</span></button>
+      <button type="submit" class="lead-submit" id="lead-submit"><svg class="wa"><use href="#i-wa"/></svg><span>Enviar e falar no WhatsApp</span></button>
       <p class="lead-fine">Ao continuar, você concorda em ser contatado pela equipe do IAHOF sobre a especialização. Seus dados não serão compartilhados.</p>
     </form>
     <div class="lead-ok" id="lead-ok" aria-live="polite">
@@ -880,7 +880,7 @@ body.lead-open{overflow:hidden}
 
   // Ao voltar do WhatsApp (cache do navegador), restaura o formulário
   window.addEventListener("pageshow", function(){
-    sending = false; btn.disabled = false; btn.querySelector("span").textContent = "Continuar no WhatsApp";
+    sending = false; btn.disabled = false; btn.querySelector("span").textContent = "Enviar e falar no WhatsApp";
     form.style.display = "";
     document.querySelector(".lead-card h3").style.display = "";
     document.querySelector(".lead-card .lead-sub").style.display = "";
